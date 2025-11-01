@@ -4,6 +4,8 @@
     :ui="{ left: 'pointer-events-auto', right: 'pointer-events-auto' }"
   >
     <template #right>
+      <LanguageSelect />
+
       <UColorModeButton />
 
       <UButton

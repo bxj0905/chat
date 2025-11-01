@@ -1,0 +1,119 @@
+{
+  "common": {
+    "title": "Nuxt AI Chatbot template",
+    "description": "A full-featured, hackable Nuxt AI chatbot template made with Nuxt UI.",
+    "copy": "Copy",
+    "copySuccess": "Copied",
+    "notFound": "Not Found",
+    "chatNotFound": "Chat not found",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "appNameShort": "Chat"
+  },
+  "home": {
+    "title": "How can I help you today?",
+    "quickChats": {
+      "whyNuxtUI": "Why use Nuxt UI?",
+      "createVueComposable": "Help me create a Vue composable",
+      "aboutUnJS": "Tell me more about UnJS",
+      "aboutVueUse": "Why should I consider VueUse?",
+      "tailwindBestPractices": "Tailwind CSS best practices",
+      "weatherInBordeaux": "What is the weather in Bordeaux?",
+      "showSalesChart": "Show me a chart of sales data"
+    }
+  },
+  "chat": {
+    "regenerate": "Regenerate",
+    "stop": "Stop",
+    "send": "Send",
+    "untitled": "Untitled",
+    "groups": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "lastWeek": "Last week",
+      "lastMonth": "Last month"
+    }
+  },
+  "layout": {
+    "deleteChat": {
+      "title": "Delete chat",
+      "description": "Are you sure you want to delete this chat? This cannot be undone.",
+      "toastTitle": "Chat deleted",
+      "toastDescription": "Your chat has been deleted"
+    },
+    "newChat": "New chat",
+    "loginWithGitHub": "Login with GitHub",
+    "search": {
+      "placeholder": "Search chats..."
+    }
+  },
+  "reasoning": {
+    "thinking": "Thinking...",
+    "thoughts": "Thoughts"
+  },
+  "tool": {
+    "chart": {
+      "generating": "Generating chart...",
+      "error": "Can't generate chart, please try again",
+      "loading": "Loading chart data...",
+      "notAvailable": "Not available"
+    },
+    "weather": {
+      "loading": "Loading weather data...",
+      "error": "Can't get weather data, please try again later",
+      "noForecast": "No forecast available"
+    }
+  },
+  "userMenu": {
+    "theme": "Theme",
+    "primary": "Primary",
+    "neutral": "Neutral",
+    "appearance": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "templates": "Templates",
+    "templatesList": {
+      "starter": "Starter",
+      "landing": "Landing",
+      "docs": "Docs",
+      "saas": "SaaS",
+      "dashboard": "Dashboard",
+      "chat": "Chat",
+      "portfolio": "Portfolio",
+      "changelog": "Changelog"
+    },
+    "documentation": "Documentation",
+    "github": "GitHub repository",
+    "logout": "Log out",
+    "colors": {
+      "red": "Red",
+      "orange": "Orange",
+      "amber": "Amber",
+      "yellow": "Yellow",
+      "lime": "Lime",
+      "green": "Green",
+      "emerald": "Emerald",
+      "teal": "Teal",
+      "cyan": "Cyan",
+      "sky": "Sky",
+      "blue": "Blue",
+      "indigo": "Indigo",
+      "violet": "Violet",
+      "purple": "Purple",
+      "fuchsia": "Fuchsia",
+      "pink": "Pink",
+      "rose": "Rose"
+    },
+    "neutrals": {
+      "slate": "Slate",
+      "gray": "Gray",
+      "zinc": "Zinc",
+      "neutral": "Neutral",
+      "stone": "Stone"
+    }
+  },
+  "error": {
+    "title": "Page not found",
+    "description": "We are sorry but this page could not be found."
+  }
+}

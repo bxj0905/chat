@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/ui',
     '@nuxtjs/mdc',
+    '@nuxtjs/i18n',
     'nuxt-auth-utils',
     'nuxt-charts'
   ],
@@ -43,5 +44,31 @@ export default defineNuxtConfig({
         braceStyle: '1tbs'
       }
     }
+  },
+
+  i18n: {
+    langDir: 'locales',
+    locales: [
+      {
+        code: 'zh',
+        language: 'zh-CN',
+        file: 'zh-CN.json',
+        name: '中文'
+      },
+      {
+        code: 'en',
+        language: 'en-US',
+        file: 'en-US.json',
+        name: 'English'
+      }
+    ],
+    defaultLocale: 'zh',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root'
+    },
+    vueI18n: './i18n.config.ts'
   }
 })

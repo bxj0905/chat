@@ -5,9 +5,12 @@ interface Chat {
   label: string
   icon: string
   createdAt: string
+  isUntitled?: boolean
 }
 
 export function useChats(chats: Ref<Chat[] | undefined>) {
+  const { t, locale } = useI18n()
+
   const groups = computed(() => {
     // Group chats by date
     const today: Chat[] = []
@@ -32,7 +35,9 @@ export function useChats(chats: Ref<Chat[] | undefined>) {
         lastMonth.push(chat)
       } else {
         // Format: "January 2023", "February 2023", etc.
-        const monthYear = chatDate.toLocaleDateString('en-US', {
+        const localeId = locale.value === 'zh' ? 'zh-CN' : 'en-US'
+
+        const monthYear = chatDate.toLocaleDateString(localeId, {
           month: 'long',
           year: 'numeric'
         })
@@ -63,7 +68,7 @@ export function useChats(chats: Ref<Chat[] | undefined>) {
     if (today.length) {
       formattedGroups.push({
         id: 'today',
-        label: 'Today',
+        label: t('chat.groups.today'),
         items: today
       })
     }
@@ -71,7 +76,7 @@ export function useChats(chats: Ref<Chat[] | undefined>) {
     if (yesterday.length) {
       formattedGroups.push({
         id: 'yesterday',
-        label: 'Yesterday',
+        label: t('chat.groups.yesterday'),
         items: yesterday
       })
     }
@@ -79,7 +84,7 @@ export function useChats(chats: Ref<Chat[] | undefined>) {
     if (lastWeek.length) {
       formattedGroups.push({
         id: 'last-week',
-        label: 'Last week',
+        label: t('chat.groups.lastWeek'),
         items: lastWeek
       })
     }
@@ -87,7 +92,7 @@ export function useChats(chats: Ref<Chat[] | undefined>) {
     if (lastMonth.length) {
       formattedGroups.push({
         id: 'last-month',
-        label: 'Last month',
+        label: t('chat.groups.lastMonth'),
         items: lastMonth
       })
     }
@@ -103,7 +108,14 @@ export function useChats(chats: Ref<Chat[] | undefined>) {
       }
     })
 
-    return formattedGroups
+    return formattedGroups.map(group => ({
+      ...group,
+      items: group.items.map(item => ({
+        ...item,
+        label: item.label || t('chat.untitled'),
+        isUntitled: item.isUntitled ?? !item.label
+      }))
+    }))
   })
 
   return {

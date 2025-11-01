@@ -3,6 +3,8 @@ const props = defineProps<{
   invocation: ChartUIToolInvocation
 }>()
 
+const { t } = useI18n()
+
 const color = computed(() => {
   return ({
     'output-error': 'bg-muted text-error'
@@ -17,10 +19,15 @@ const icon = computed(() => {
 })
 
 const message = computed(() => {
-  return ({
-    'input-available': 'Generating chart...',
-    'output-error': 'Can\'t generate chart, please try again'
-  })[props.invocation.state as string] || 'Loading chart data...'
+  if (props.invocation.state === 'input-available') {
+    return t('tool.chart.generating')
+  }
+
+  if (props.invocation.state === 'output-error') {
+    return t('tool.chart.error')
+  }
+
+  return t('tool.chart.loading')
 })
 
 const xFormatter = (invocation: ChartUIToolInvocation) => {
@@ -42,7 +49,7 @@ const categories = (invocation: ChartUIToolInvocation): Record<string, BulletLeg
 }
 
 const formatValue = (value: string | number | undefined): string => {
-  if (value === undefined || value === null) return 'N/A'
+  if (value === undefined || value === null) return t('tool.chart.notAvailable')
   if (typeof value === 'string') return value
 
   if (Number.isInteger(value)) {

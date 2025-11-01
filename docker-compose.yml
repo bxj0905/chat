@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    # 使用官方镜像（配置镜像加速器后可加速拉取）
+    image: postgres:18
+    # 或者直接使用国内镜像源（取消下面的注释并注释掉上面一行）：
+    # image: registry.cn-hangzhou.aliyuncs.com/acs/postgres:18
+    # image: ccr.ccs.tencentyun.com/library/postgres:18
+    container_name: chat-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: chat_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+

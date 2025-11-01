@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
+const { t, locale } = useI18n()
 
 const color = computed(() => colorMode.value === 'dark' ? '#1b1718' : 'white')
 
@@ -13,12 +14,12 @@ useHead({
     { rel: 'icon', href: '/favicon.ico' }
   ],
   htmlAttrs: {
-    lang: 'en'
+    lang: locale
   }
 })
 
-const title = 'Nuxt AI Chatbot template'
-const description = 'A full-featured, hackable Nuxt AI chatbot template made with Nuxt UI.'
+const title = computed(() => t('common.title'))
+const description = computed(() => t('common.description'))
 
 useSeoMeta({
   title,

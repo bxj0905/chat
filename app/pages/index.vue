@@ -3,6 +3,7 @@ const input = ref('')
 const loading = ref(false)
 
 const { model } = useModels()
+const { t } = useI18n()
 
 async function createChat(prompt: string) {
   input.value = prompt
@@ -20,36 +21,36 @@ function onSubmit() {
   createChat(input.value)
 }
 
-const quickChats = [
+const quickChats = computed(() => [
   {
-    label: 'Why use Nuxt UI?',
+    label: t('home.quickChats.whyNuxtUI'),
     icon: 'i-logos-nuxt-icon'
   },
   {
-    label: 'Help me create a Vue composable',
+    label: t('home.quickChats.createVueComposable'),
     icon: 'i-logos-vue'
   },
   {
-    label: 'Tell me more about UnJS',
+    label: t('home.quickChats.aboutUnJS'),
     icon: 'i-logos-unjs'
   },
   {
-    label: 'Why should I consider VueUse?',
+    label: t('home.quickChats.aboutVueUse'),
     icon: 'i-logos-vueuse'
   },
   {
-    label: 'Tailwind CSS best practices',
+    label: t('home.quickChats.tailwindBestPractices'),
     icon: 'i-logos-tailwindcss-icon'
   },
   {
-    label: 'What is the weather in Bordeaux?',
+    label: t('home.quickChats.weatherInBordeaux'),
     icon: 'i-lucide-sun'
   },
   {
-    label: 'Show me a chart of sales data',
+    label: t('home.quickChats.showSalesChart'),
     icon: 'i-lucide-line-chart'
   }
-]
+])
 </script>
 
 <template>
@@ -61,7 +62,7 @@ const quickChats = [
     <template #body>
       <UContainer class="flex-1 flex flex-col justify-center gap-4 sm:gap-6 py-8">
         <h1 class="text-3xl sm:text-4xl text-highlighted font-bold">
-          How can I help you today?
+          {{ t('home.title') }}
         </h1>
 
         <UChatPrompt

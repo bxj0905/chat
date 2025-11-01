@@ -3,6 +3,8 @@ const props = defineProps<{
   invocation: WeatherUIToolInvocation
 }>()
 
+const { t } = useI18n()
+
 const color = computed(() => {
   return ({
     'output-available': 'bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 dark:from-sky-500 dark:via-blue-600 dark:to-indigo-700 text-white',
@@ -18,10 +20,15 @@ const icon = computed(() => {
 })
 
 const message = computed(() => {
-  return ({
-    'input-available': 'Loading weather data...',
-    'output-error': 'Can\'t get weather data, please try again later'
-  })[props.invocation.state as string] || 'Loading weather data...'
+  if (props.invocation.state === 'input-available') {
+    return t('tool.weather.loading')
+  }
+
+  if (props.invocation.state === 'output-error') {
+    return t('tool.weather.error')
+  }
+
+  return t('tool.weather.loading')
 })
 </script>
 
@@ -93,7 +100,7 @@ const message = computed(() => {
 
       <div v-else class="flex items-center justify-center py-3">
         <div class="text-xs">
-          No forecast available
+          {{ t('tool.weather.noForecast') }}
         </div>
       </div>
     </template>

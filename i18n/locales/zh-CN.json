@@ -1,0 +1,119 @@
+{
+  "common": {
+    "title": "Nuxt AI 聊天机器人模板",
+    "description": "一个功能完整的、可定制的 Nuxt AI 聊天机器人模板，使用 Nuxt UI 构建。",
+    "copy": "复制",
+    "copySuccess": "已复制",
+    "notFound": "未找到",
+    "chatNotFound": "聊天未找到",
+    "delete": "删除",
+    "cancel": "取消",
+    "appNameShort": "聊天"
+  },
+  "home": {
+    "title": "今天我能为您做些什么？",
+    "quickChats": {
+      "whyNuxtUI": "为什么使用 Nuxt UI？",
+      "createVueComposable": "帮我创建一个 Vue composable",
+      "aboutUnJS": "告诉我更多关于 UnJS 的信息",
+      "aboutVueUse": "为什么我应该考虑 VueUse？",
+      "tailwindBestPractices": "Tailwind CSS 最佳实践",
+      "weatherInBordeaux": "波尔多的天气如何？",
+      "showSalesChart": "给我看看销售数据的图表"
+    }
+  },
+  "chat": {
+    "regenerate": "重新生成",
+    "stop": "停止",
+    "send": "发送",
+    "untitled": "未命名",
+    "groups": {
+      "today": "今天",
+      "yesterday": "昨天",
+      "lastWeek": "最近一周",
+      "lastMonth": "最近一月"
+    }
+  },
+  "layout": {
+    "deleteChat": {
+      "title": "删除聊天",
+      "description": "确定要删除此聊天吗？该操作无法撤销。",
+      "toastTitle": "聊天已删除",
+      "toastDescription": "您的聊天记录已被删除"
+    },
+    "newChat": "新建聊天",
+    "loginWithGitHub": "使用 GitHub 登录",
+    "search": {
+      "placeholder": "搜索聊天..."
+    }
+  },
+  "reasoning": {
+    "thinking": "思考中...",
+    "thoughts": "思考过程"
+  },
+  "tool": {
+    "chart": {
+      "generating": "正在生成图表...",
+      "error": "无法生成图表，请重试",
+      "loading": "正在加载图表数据...",
+      "notAvailable": "暂无数据"
+    },
+    "weather": {
+      "loading": "正在加载天气数据...",
+      "error": "无法获取天气数据，请稍后再试",
+      "noForecast": "暂无天气预报"
+    }
+  },
+  "userMenu": {
+    "theme": "主题",
+    "primary": "主色",
+    "neutral": "中性色",
+    "appearance": "外观",
+    "light": "浅色模式",
+    "dark": "深色模式",
+    "templates": "模板",
+    "templatesList": {
+      "starter": "Starter 模板",
+      "landing": "Landing 模板",
+      "docs": "Docs 模板",
+      "saas": "SaaS 模板",
+      "dashboard": "Dashboard 模板",
+      "chat": "Chat 模板",
+      "portfolio": "Portfolio 模板",
+      "changelog": "Changelog 模板"
+    },
+    "documentation": "文档",
+    "github": "GitHub 仓库",
+    "logout": "退出登录",
+    "colors": {
+      "red": "红色",
+      "orange": "橙色",
+      "amber": "琥珀色",
+      "yellow": "黄色",
+      "lime": "青柠绿",
+      "green": "绿色",
+      "emerald": "祖母绿",
+      "teal": "蓝绿色",
+      "cyan": "青色",
+      "sky": "天空蓝",
+      "blue": "蓝色",
+      "indigo": "靛蓝",
+      "violet": "紫罗兰",
+      "purple": "紫色",
+      "fuchsia": "品红",
+      "pink": "粉色",
+      "rose": "玫瑰红"
+    },
+    "neutrals": {
+      "slate": "石板灰",
+      "gray": "灰色",
+      "zinc": "锌灰",
+      "neutral": "中性色",
+      "stone": "石色"
+    }
+  },
+  "error": {
+    "title": "页面未找到",
+    "description": "抱歉，未能找到该页面。"
+  }
+}

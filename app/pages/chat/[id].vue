@@ -20,8 +20,10 @@ const { data } = await useFetch(`/api/chats/${route.params.id}`, {
   cache: 'force-cache'
 })
 
+const { t } = useI18n()
+
 if (!data.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Chat not found', fatal: true })
+  throw createError({ statusCode: 404, statusMessage: t('common.chatNotFound'), fatal: true })
 }
 
 const input = ref('')
@@ -92,7 +94,7 @@ onMounted(() => {
           should-auto-scroll
           :messages="chat.messages"
           :status="chat.status"
-          :assistant="chat.status !== 'streaming' ? { actions: [{ label: 'Copy', icon: copied ? 'i-lucide-copy-check' : 'i-lucide-copy', onClick: copy }] } : { actions: [] }"
+          :assistant="chat.status !== 'streaming' ? { actions: [{ label: t('common.copy'), icon: copied ? 'i-lucide-copy-check' : 'i-lucide-copy', onClick: copy }] } : { actions: [] }"
           :spacing-offset="160"
           class="lg:pt-(--ui-header-height) pb-4 sm:pb-6"
         >

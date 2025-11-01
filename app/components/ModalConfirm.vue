@@ -5,6 +5,8 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{ close: [boolean] }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -18,11 +20,11 @@ const emit = defineEmits<{ close: [boolean] }>()
     :dismissible="false"
   >
     <template #footer>
-      <UButton label="Delete" @click="emit('close', true)" />
+      <UButton :label="t('common.delete')" @click="emit('close', true)" />
       <UButton
         color="neutral"
         variant="ghost"
-        label="Cancel"
+        :label="t('common.cancel')"
         @click="emit('close', false)"
       />
     </template>

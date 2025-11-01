@@ -6,6 +6,8 @@ const { isStreaming = false } = defineProps<{
 
 const open = ref(false)
 
+const { t } = useI18n()
+
 watch(() => isStreaming, () => {
   open.value = isStreaming
 }, { immediate: true })
@@ -29,7 +31,7 @@ function cleanMarkdown(text: string): string {
       :ui="{
         trailingIcon: text.length > 0 ? 'group-data-[state=open]:rotate-180 transition-transform duration-200' : 'hidden'
       }"
-      :label="isStreaming ? 'Thinking...' : 'Thoughts'"
+      :label="isStreaming ? t('reasoning.thinking') : t('reasoning.thoughts')"
     />
 
     <template #content>
