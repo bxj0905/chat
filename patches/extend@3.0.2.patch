@@ -1,0 +1,11 @@
+diff --git a/index.js b/index.js
+index f913979ad9960c0aaca1d511f9afba87a4d6003a..d283ff407b9af765fd6801dd62ecf6342a1c01bd 100644
+--- a/index.js
++++ b/index.js
+@@ -115,3 +115,6 @@ module.exports = function extend() {
+	// Return the modified object
+	return target;
+ };
+
++module.exports.default = module.exports;
++module.exports.extend = module.exports;

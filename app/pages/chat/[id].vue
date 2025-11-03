@@ -33,8 +33,26 @@ const chat = new Chat({
   messages: data.value.messages,
   transport: new DefaultChatTransport({
     api: `/api/chats/${data.value.id}`,
-    body: {
-      model: model.value
+    // 始终在发送前注入当前选择的模型，避免缓存旧值
+    prepareSendMessagesRequest: ({ api, body, headers, credentials, requestMetadata, trigger, id: chatId, messageId, messages }) => {
+      return {
+        api,
+        headers,
+        credentials,
+        // 必须带上 messages/id/trigger/messageId，否则后端验证会报错
+        body: {
+          ...(body || {}),
+          id: chatId,
+          messages,
+          trigger,
+          messageId,
+          model: model.value
+        },
+        requestMetadata,
+        trigger,
+        id: chatId,
+        messageId
+      }
     }
   }),
   onData: (dataPart) => {

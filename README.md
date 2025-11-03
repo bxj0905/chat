@@ -18,7 +18,7 @@ Full-featured AI Chatbot Nuxt application with authentication, chat history, mul
 ## Features
 
 - ⚡️ **Streaming AI messages** powered by the [AI SDK v5](https://sdk.vercel.ai)
-- 🤖 **Multiple model support** via various AI providers with built-in AI Gateway support
+- 🤖 **Multiple model support** via various AI providers and OpenAI-compatible endpoints
 - 🔐 **Authentication** via [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils)
 - 💾 **Chat history persistence** using PostgreSQL database and [Drizzle ORM](https://orm.drizzle.team)
 - 🚀 **Easy deploy** to Vercel with zero configuration
@@ -51,15 +51,12 @@ DATABASE_URL=<your-postgresql-database-url>
 NUXT_OAUTH_GITHUB_CLIENT_ID=<your-github-oauth-app-client-id>
 NUXT_OAUTH_GITHUB_CLIENT_SECRET=<your-github-oauth-app-client-secret>
 
-# AI Configuration via Vercel AI Gateway (unified API for all providers)
-AI_GATEWAY_API_KEY=<your-vercel-ai-gateway-api-key>
-
 # Password for nuxt-auth-utils (minimum 32 characters)
 NUXT_SESSION_PASSWORD=<your-password>
 ```
 
 > [!TIP]
-> With [Vercel AI Gateway](https://vercel.com/docs/ai-gateway), you don't need individual API keys for OpenAI, Anthropic, etc. The AI Gateway provides a unified API to access hundreds of models through a single endpoint with automatic load balancing, fallbacks, and spend monitoring.
+> 本模板支持直接连接多个厂商或 OpenAI 兼容端。见下文“自行直连各模型”。
 
 To add authentication with GitHub, you need to [create a GitHub OAuth application](https://github.com/settings/applications/new).
 
@@ -107,23 +104,89 @@ Or connect your repository to Vercel for automatic deployments:
 > [!NOTE]
 > Make sure to configure your PostgreSQL database connection and run migrations in your production environment.
 
-The application is configured to use [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) which provides:
+<!-- 旧的 Vercel AI Gateway 说明已移除，推荐使用下方直连配置。 -->
 
-- **Unified API**: Access hundreds of AI models through a single endpoint
-- **High Reliability**: Automatic retries and fallbacks between providers
-- **Spend Monitoring**: Track usage and set budgets across all providers
-- **Load Balancing**: Distribute requests for optimal performance
+## 自行直连各模型（不使用 Vercel AI Gateway）
 
-Simply configure your `AI_GATEWAY_API_KEY` in your Vercel environment variables for production use.
+> 本模板已内置对 DeepSeek、Qwen（DashScope 兼容）、豆包（火山方舟 Ark）、OpenAI 以及通用 OpenAI 兼容端的支持。按照下列方式在 `.env` 中配置即可直连。
 
-## AI Gateway Setup
+```env
+# OpenAI（可选 base）
+OPENAI_API_KEY=sk-xxx
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
 
-1. Create a Vercel account at [vercel.com](https://vercel.com)
-2. Navigate to your [AI Gateway settings](https://vercel.com/dashboard/ai-gateway)
-3. Generate an API key for your project
-4. Add the key to your environment variables as `AI_GATEWAY_API_KEY`
+# OpenAI 兼容端（自建/第三方代理）
+OPENAI_COMPATIBLE_BASE_URL= # 如 https://your-openai-compatible.example.com
+OPENAI_COMPATIBLE_API_KEY= # 对应的密钥
+OPENAI_COMPATIBLE_PROVIDER=openai-compatible
+OPENAI_COMPATIBLE_MODEL=gpt-4o-mini
 
-The AI Gateway automatically handles authentication with all supported AI providers including OpenAI, Anthropic, Google, xAI, and many others.
+# DeepSeek（OpenAI 兼容，使用 Chat Completions）
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_API_KEY=ds-xxx
+DEEPSEEK_MODEL=deepseek-chat
+
+# Qwen（DashScope 兼容端）
+QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+QWEN_API_KEY=qs-xxx
+QWEN_MODEL=qwen-max
+
+# 豆包 / 火山方舟 Ark（OpenAI 兼容，/api/v3/chat/completions）
+DOUBAO_BASE_URL=https://ark.cn-beijing.volces.com/api/v3
+DOUBAO_API_KEY=cf02bc6b-...
+DOUBAO_MODEL=doubao-seed-1-6-251015
+
+# 默认模型（provider/model）
+DEFAULT_MODEL=deepseek/deepseek-chat
+```
+
+### 重要提示
+
+- DeepSeek 官方建议使用根域名作为 base：`https://api.deepseek.com`，客户端会自动追加 `/v1/chat/completions`（兼容 OpenAI）。
+- 豆包 Ark 必须使用 `https://ark.cn-beijing.volces.com/api/v3`（不要带尾斜杠），模板会强制走 Chat Completions 路径。
+- 切换模型后，无需刷新页面：聊天页会在发送前动态注入当前选择的模型。
+
+### 豆包最小连通性测试（纯文本）
+
+```bash
+curl -sS https://ark.cn-beijing.volces.com/api/v3/chat/completions \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $DOUBAO_API_KEY" \
+  -d '{
+    "model": "doubao-seed-1-6-251015",
+    "messages": [{"role":"user","content":[{"type":"text","text":"你好，用一句话自我介绍。"}]}],
+    "max_completion_tokens": 512
+  }'
+```
+
+## 自定义首页 Quick Chats（中英文）
+
+首页 Quick Chats 支持通过 `runtimeConfig.public.quickChats` 变量配置，支持中英文内容：
+
+```ts
+// nuxt.config.ts（片段）
+export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      quickChats: [
+        { zh: '为什么选择 Nuxt UI？', en: 'Why choose Nuxt UI?', icon: 'i-logos-nuxt-icon' },
+        { zh: '展示一个销售折线图', en: 'Show a sales line chart', icon: 'i-lucide-line-chart' }
+      ]
+    }
+  }
+})
+```
+
+前端会根据当前语言自动选择 `zh/en` 字段；未设置时将退回到内置的 i18n 文案。
+
+## 模型 Logo
+
+模板支持为部分模型显示官方 Logo。你可以将图标放到 `public/logos/` 下，并在 `nuxt.config.ts` 的 `models` 配置里为对应项设置 `logo` 字段（或继续使用 Iconify 的 `icon` 字段）。示例：
+
+```ts
+{ label: 'DeepSeek Chat', value: 'deepseek/deepseek-chat', logo: '/logos/deepseek.svg' }
+```
 
 ## Renovate integration
 

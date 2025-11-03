@@ -3,7 +3,8 @@ const input = ref('')
 const loading = ref(false)
 
 const { model } = useModels()
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const runtimeConfig = useRuntimeConfig()
 
 async function createChat(prompt: string) {
   input.value = prompt
@@ -21,36 +22,34 @@ function onSubmit() {
   createChat(input.value)
 }
 
-const quickChats = computed(() => [
-  {
-    label: t('home.quickChats.whyNuxtUI'),
-    icon: 'i-logos-nuxt-icon'
-  },
-  {
-    label: t('home.quickChats.createVueComposable'),
-    icon: 'i-logos-vue'
-  },
-  {
-    label: t('home.quickChats.aboutUnJS'),
-    icon: 'i-logos-unjs'
-  },
-  {
-    label: t('home.quickChats.aboutVueUse'),
-    icon: 'i-logos-vueuse'
-  },
-  {
-    label: t('home.quickChats.tailwindBestPractices'),
-    icon: 'i-logos-tailwindcss-icon'
-  },
-  {
-    label: t('home.quickChats.weatherInBordeaux'),
-    icon: 'i-lucide-sun'
-  },
-  {
-    label: t('home.quickChats.showSalesChart'),
-    icon: 'i-lucide-line-chart'
+const quickChats = computed(() => {
+  const cfg = (runtimeConfig.public as any).quickChats as Array<any> | undefined
+
+  if (Array.isArray(cfg) && cfg.length) {
+    return cfg.map(item => {
+      // 支持 label 为 { zh,en } 或直接提供 zh/en 字段，也兼容直接给字符串
+      const localized = typeof item.label === 'object'
+        ? (item.label[locale.value] ?? item.label.zh ?? item.label.en)
+        : (item?.[locale.value] ?? item?.zh ?? item?.en ?? item.label)
+
+      return {
+        label: localized,
+        icon: item.icon
+      }
+    })
   }
-])
+
+  // 回退到原有的 i18n 方案
+  return [
+    { label: t('home.quickChats.whyNuxtUI'), icon: 'i-logos-nuxt-icon' },
+    { label: t('home.quickChats.createVueComposable'), icon: 'i-logos-vue' },
+    { label: t('home.quickChats.aboutUnJS'), icon: 'i-logos-unjs' },
+    { label: t('home.quickChats.aboutVueUse'), icon: 'i-logos-vueuse' },
+    { label: t('home.quickChats.tailwindBestPractices'), icon: 'i-logos-tailwindcss-icon' },
+    { label: t('home.quickChats.weatherInBordeaux'), icon: 'i-lucide-sun' },
+    { label: t('home.quickChats.showSalesChart'), icon: 'i-lucide-line-chart' }
+  ]
+})
 </script>
 
 <template>
