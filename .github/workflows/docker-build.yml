@@ -8,7 +8,7 @@ on:
       - '*'
   pull_request:
     branches:
-      - main
+      - master
 
 permissions:
   contents: read
@@ -26,7 +26,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/master'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -38,8 +38,8 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ github.ref == 'refs/heads/main' }}
-          load: ${{ github.ref != 'refs/heads/main' }}
+          push: ${{ github.ref == 'refs/heads/master' }}
+          load: ${{ github.ref != 'refs/heads/master' }}
           build-args: |
             NODE_OPTIONS=--max_old_space_size=6144
           tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
