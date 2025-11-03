@@ -2,9 +2,11 @@
 
 # ---------- base ----------
 FROM node:20-alpine AS base
+ARG NODE_OPTIONS=--max_old_space_size=6144
 ENV NODE_ENV=production
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+ENV NODE_OPTIONS=${NODE_OPTIONS}
 RUN corepack enable && adduser -D -u 10001 app
 
 # ---------- deps ----------
