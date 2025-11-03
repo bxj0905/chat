@@ -1,13 +1,12 @@
-# .github/workflows/ci.yml
 name: CI
 
 on:
   push:
     branches:
-      - '*'          # 所有分支
+      - '*'
   pull_request:
     branches:
-      - main        # PR 目标是 main 时触发
+      - main
 
 jobs:
   build-and-test:
@@ -26,7 +25,8 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 8       # 与项目一致
+          version: 8
+          run_install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -34,18 +34,12 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      - name: Unit tests
+      - name: Test
         run: pnpm test
+        # 如果暂时没有测试脚本，可先注释或改为 echo，避免失败
+        # continue-on-error: true
 
-      # 如果需要构建
       - name: Build
         run: pnpm build
         env:
           NODE_OPTIONS: --max_old_space_size=6144
-
-      # 可选：在 PR 时上传构建工件，或在 main 合并后部署
-      # - name: Upload artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: nuxt-dist
-      #     path: .output
