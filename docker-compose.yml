@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/bxj0905/chat:ededc20c3b6927d2927cf95df7ce689073f228d5
     container_name: chat-web
     restart: unless-stopped
     environment:
@@ -14,7 +12,7 @@ services:
       # 数据库连接（Drizzle / Postgres）
       DATABASE_URL: postgres://postgres:postgres123@postgres:5432/chat_db
       # Session 密钥（至少 32 字符）
-      NUXT_SESSION_PASSWORD: please-change-me-32-chars-minimum-xxxxxxxxxxxxxxxx
+      NUXT_SESSION_PASSWORD: vck_2waqaCNs0sIXk61ecdrpdLKqpLQtep4qUkMr84Eda4Cue0IB1d25AY4h
       # 可选：设置默认模型等
       # DEFAULT_MODEL: deepseek/deepseek-chat
     depends_on:
@@ -34,7 +32,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/chat-postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s

@@ -31,7 +31,7 @@ RUN corepack disable && npm i -g pnpm@10.20.0 && pnpm -v
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Nuxt 4 build output: .output/
-ARG NITRO_PRESET=node
+ARG NITRO_PRESET=node-server
 ENV NITRO_PRESET=${NITRO_PRESET}
 # Fix esbuild host/binary mismatch inside container (Alpine/musl)
 RUN pnpm rebuild esbuild
