@@ -1,0 +1,51 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'          # 所有分支
+  pull_request:
+    branches:
+      - main        # PR 目标是 main 时触发
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8       # 与项目一致
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test
+
+      # 如果需要构建
+      - name: Build
+        run: pnpm build
+        env:
+          NODE_OPTIONS: --max_old_space_size=6144
+
+      # 可选：在 PR 时上传构建工件，或在 main 合并后部署
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: nuxt-dist
+      #     path: .output
