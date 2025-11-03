@@ -1,133 +1,108 @@
-const hasOwn = Object.prototype.hasOwnProperty;
-const toStr = Object.prototype.toString;
-const defineProp = Object.defineProperty;
-const getOwnPropDescriptor = Object.getOwnPropertyDescriptor;
+type PlainObject = Record<string, unknown>
 
-const isArray = (value: unknown): value is unknown[] => Array.isArray(value);
-
-const isPlainObject = (value: unknown): value is Record<string, any> => {
-  if (!value || toStr.call(value) !== '[object Object]') {
-    return false;
+const isPlainObject = (value: unknown): value is PlainObject => {
+  if (value === null || typeof value !== 'object') {
+    return false
   }
 
-  const hasOwnConstructor = hasOwn.call(value, 'constructor');
-  const prototype = (value as Record<string, any>).constructor?.prototype;
-  const hasIsPrototypeOf = prototype && hasOwn.call(prototype, 'isPrototypeOf');
-
-  if ((value as Record<string, any>).constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
-    return false;
-  }
-
-  let key: string | undefined;
-  /* eslint-disable no-restricted-syntax */
-  for (key in value as Record<string, any>) {
-    // Intentional iteration to detect last key
-  }
-  /* eslint-enable no-restricted-syntax */
-
-  return typeof key === 'undefined' || hasOwn.call(value, key);
-};
-
-interface SetPropertyOptions {
-  name: string;
-  newValue: unknown;
+  return Object.prototype.toString.call(value) === '[object Object]'
 }
 
-const setProperty = (target: Record<string, any>, options: SetPropertyOptions) => {
-  if (defineProp && options.name === '__proto__') {
-    defineProp(target, options.name, {
-      enumerable: true,
-      configurable: true,
-      value: options.newValue,
-      writable: true
-    });
-  } else {
-    target[options.name] = options.newValue;
-  }
-};
-
-const getProperty = (target: Record<string, any>, name: string) => {
-  if (name === '__proto__') {
-    if (!hasOwn.call(target, name)) {
-      return undefined;
-    }
-
-    if (getOwnPropDescriptor) {
-      return getOwnPropDescriptor(target, name)?.value;
-    }
+const cloneValue = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    return value.map(item => cloneValue(item))
   }
 
-  return target[name];
-};
+  if (isPlainObject(value)) {
+    const result: PlainObject = {}
+    for (const key of Object.keys(value)) {
+      result[key] = cloneValue(value[key])
+    }
+    return result
+  }
+
+  return value
+}
+
+const mergeValue = (deep: boolean, target: unknown, source: unknown): unknown => {
+  if (!deep) {
+    return source
+  }
+
+  if (Array.isArray(source)) {
+    if (Array.isArray(target)) {
+      return source.map((item, index) => mergeValue(true, target[index], item))
+    }
+    return source.map(item => cloneValue(item))
+  }
+
+  if (isPlainObject(source)) {
+    const base = isPlainObject(target) ? { ...target } : {}
+    for (const key of Object.keys(source)) {
+      const nextValue = mergeValue(true, base[key], source[key])
+      base[key] = nextValue
+    }
+    return base
+  }
+
+  return source
+}
+
+const assign = (deep: boolean, target: PlainObject, source: unknown) => {
+  if (source === null || typeof source !== 'object') {
+    return
+  }
+
+  const keys = Object.keys(source as PlainObject)
+  for (const key of keys) {
+    const current = (source as PlainObject)[key]
+    if (current === undefined) {
+      continue
+    }
+
+    const merged = mergeValue(deep, target[key], current)
+    if (key === '__proto__') {
+      Object.defineProperty(target, key, {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: merged
+      })
+    } else {
+      target[key] = merged
+    }
+  }
+}
 
 interface ExtendFunction {
-  (...args: any[]): any;
-  extend: ExtendFunction;
-  default: ExtendFunction;
+  <T extends PlainObject, S extends Array<PlainObject | undefined>>(target: T, ...sources: S): T & S[number]
+  <T extends PlainObject, S extends Array<PlainObject | undefined>>(deep: boolean, target: T, ...sources: S): T & S[number]
+  extend: ExtendFunction
+  default: ExtendFunction
 }
 
-const extendFunc = function extend(...args: any[]): any {
-  let target = args[0];
-  let i = 1;
-  const length = args.length;
-  let deep = false;
+const extendImplementation = ((...args: unknown[]) => {
+  let deep = false
+  let index = 0
 
-  if (typeof target === 'boolean') {
-    deep = target;
-    target = args[1] ?? {};
-    i = 2;
+  if (typeof args[0] === 'boolean') {
+    deep = args[0]
+    index = 1
   }
 
-  if (target == null || (typeof target !== 'object' && typeof target !== 'function')) {
-    target = {};
+  const initialTarget = (args[index] ?? {}) as PlainObject
+  const target = isPlainObject(initialTarget) ? initialTarget : {}
+
+  for (let position = index + 1; position < args.length; position += 1) {
+    assign(deep, target, args[position])
   }
 
-  const output = target as Record<string, any>;
+  return target
+}) as ExtendFunction
 
-  for (; i < length; i++) {
-    const options = args[i];
+extendImplementation.extend = extendImplementation
+extendImplementation.default = extendImplementation
 
-    if (options == null) {
-      continue;
-    }
+export const extend = extendImplementation
 
-    for (const name in options) {
-      if (!hasOwn.call(options, name)) {
-        continue;
-      }
-
-      const src = getProperty(output, name);
-      const copy = getProperty(options as Record<string, any>, name);
-
-      if (output === copy) {
-        continue;
-      }
-
-      if (
-        deep &&
-        copy &&
-        (isPlainObject(copy) || (Array.isArray(copy) && copy !== undefined))
-      ) {
-        const copyIsArray = Array.isArray(copy);
-        const clone = copyIsArray
-          ? (Array.isArray(src) ? src : [])
-          : (isPlainObject(src) ? src : {});
-
-        const merged = extendFunc(deep, clone, copy);
-        setProperty(output, { name, newValue: merged });
-      } else if (copy !== undefined) {
-        setProperty(output, { name, newValue: copy });
-      }
-    }
-  }
-
-  return output;
-} as ExtendFunction;
-
-extendFunc.extend = extendFunc;
-extendFunc.default = extendFunc;
-
-export const extend = extendFunc;
-
-export default extendFunc;
-
+export default extendImplementation

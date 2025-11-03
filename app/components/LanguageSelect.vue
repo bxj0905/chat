@@ -1,26 +1,49 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
+interface LocaleItem {
+  code: string
+  name?: string
+}
+
 const { locale, locales, setLocale } = useI18n()
 
+const normalizedLocales = computed<LocaleItem[]>(() => {
+  if (!Array.isArray(locales.value)) {
+    return []
+  }
+
+  return locales.value
+    .filter((item): item is LocaleItem => {
+      return typeof item === 'object' && item !== null && 'code' in item
+    })
+    .map((item) => {
+      return { code: item.code, name: item.name }
+    })
+})
+
 const currentLocaleName = computed(() => {
-  const current = locales.value.find((l: any) => l.code === locale.value)
+  const current = normalizedLocales.value.find((item) => {
+    return item.code === locale.value
+  })
   return current?.name || locale.value
 })
 
 const items = computed<DropdownMenuItem[][]>(() => [[
-  ...locales.value.map((l: any) => ({
-    label: l.name || l.code,
-    icon: l.code === 'zh' ? 'i-lucide-languages' : 'i-lucide-globe',
-    type: 'checkbox' as const,
-    checked: locale.value === l.code,
-    async onSelect(e: Event) {
-      e.preventDefault()
-      if (locale.value !== l.code) {
-        await setLocale(l.code)
+  ...normalizedLocales.value.map((item) => {
+    return {
+      label: item.name || item.code,
+      icon: item.code === 'zh' ? 'i-lucide-languages' : 'i-lucide-globe',
+      type: 'checkbox' as const,
+      checked: locale.value === item.code,
+      async onSelect(event: Event) {
+        event.preventDefault()
+        if (locale.value !== item.code) {
+          await setLocale(item.code)
+        }
       }
     }
-  }))
+  })
 ]])
 </script>
 

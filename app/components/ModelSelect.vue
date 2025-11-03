@@ -3,7 +3,7 @@ const { model, models } = useModels()
 
 const fallbackIcon = 'i-lucide-cpu'
 
-const items = computed(() => models.map(item => {
+const items = computed(() => models.map((item) => {
   const hasAvatar = Boolean(item.avatar?.src)
 
   return {
@@ -18,7 +18,11 @@ const items = computed(() => models.map(item => {
   }
 }))
 
-const selectedItem = computed(() => items.value.find(item => item.value === model.value))
+const selectedItem = computed(() => {
+  return items.value.find((item) => {
+    return item.value === model.value
+  })
+})
 const selectedIcon = computed(() => selectedItem.value?.icon ?? (selectedItem.value?.avatar ? undefined : fallbackIcon))
 const selectedAvatar = computed(() => selectedItem.value?.avatar)
 </script>

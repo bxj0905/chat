@@ -41,4 +41,10 @@
     "vue-tsc": "^3.1.2"
   },
   "packageManager": "pnpm@10.20.0"
+  ,
+  "pnpm": {
+    "overrides": {
+      "esbuild": "0.25.12"
+    }
+  }
 }

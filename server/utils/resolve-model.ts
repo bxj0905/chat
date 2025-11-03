@@ -9,6 +9,10 @@ interface ProviderConfig {
   baseURL?: string
 }
 
+interface RuntimeConfig {
+  ai?: Record<string, ProviderConfig | undefined>
+}
+
 function sanitizeBaseURL(baseURL?: string) {
   if (!baseURL) {
     return undefined
@@ -34,7 +38,7 @@ function requireApiKey(apiKey: string | undefined, provider: string) {
   }
 }
 
-export function resolveModel(modelId: string, runtimeConfig: any): LanguageModelV1 {
+export function resolveModel(modelId: string, runtimeConfig: RuntimeConfig): LanguageModelV1 {
   const [provider, ...rest] = modelId.split('/')
   const modelName = rest.join('/')
 
@@ -45,7 +49,7 @@ export function resolveModel(modelId: string, runtimeConfig: any): LanguageModel
     })
   }
 
-  const aiConfig = (runtimeConfig?.ai ?? {}) as Record<string, ProviderConfig | undefined>
+  const aiConfig = runtimeConfig.ai ?? {}
 
   const normalizedProvider = provider.toLowerCase()
 
@@ -64,9 +68,9 @@ export function resolveModel(modelId: string, runtimeConfig: any): LanguageModel
 
   const openaiCompatibleProviders: Record<string, string> = {
     'openai-compatible': 'openaiCompatible',
-    deepseek: 'deepseek',
-    qwen: 'qwen',
-    doubao: 'doubao'
+    'deepseek': 'deepseek',
+    'qwen': 'qwen',
+    'doubao': 'doubao'
   }
 
   const mappedKey = openaiCompatibleProviders[normalizedProvider]
@@ -115,4 +119,3 @@ export function resolveModel(modelId: string, runtimeConfig: any): LanguageModel
     statusMessage: `暂不支持的模型提供方：${provider}`
   })
 }
-

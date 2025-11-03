@@ -55,11 +55,13 @@ export function useModels() {
   const runtimeConfig = useRuntimeConfig()
   const configuredModels = runtimeConfig.public.models as ModelOption[] | undefined
 
-  const enabledModels = configuredModels?.filter(model => model.enabled !== false)
+  const enabledModels = configuredModels?.filter((model) => {
+    return model.enabled !== false
+  })
   const sanitizedModels = enabledModels?.map(({ enabled, ...rest }) => rest)
 
   const baseModels = sanitizedModels?.length ? sanitizedModels : FALLBACK_MODELS
-  const models = baseModels.map(model => {
+  const models = baseModels.map((model) => {
     const logo = model.logo
     const avatar = logo
       ? {
@@ -75,13 +77,17 @@ export function useModels() {
   })
 
   const configuredDefaultModel = runtimeConfig.public.defaultModel as string | undefined
-  const defaultModel = configuredDefaultModel && models.some(model => model.value === configuredDefaultModel)
+  const defaultModel = configuredDefaultModel && models.some((model) => {
+    return model.value === configuredDefaultModel
+  })
     ? configuredDefaultModel
     : models[0]?.value ?? FALLBACK_DEFAULT_MODEL
 
   const model = useCookie<string>('model', { default: () => defaultModel })
 
-  if (!model.value || !models.some(item => item.value === model.value)) {
+  if (!model.value || !models.some((item) => {
+    return item.value === model.value
+  })) {
     model.value = defaultModel
   }
 

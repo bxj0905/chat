@@ -6,6 +6,19 @@ const { model } = useModels()
 const { t, locale } = useI18n()
 const runtimeConfig = useRuntimeConfig()
 
+type QuickChatLabelMap = Record<string, string | undefined>
+interface QuickChatEntry extends Record<string, unknown> {
+  label?: string | QuickChatLabelMap
+  icon?: string
+  zh?: string
+  en?: string
+}
+
+interface QuickChatOption {
+  label: string
+  icon?: string
+}
+
 async function createChat(prompt: string) {
   input.value = prompt
   loading.value = true
@@ -22,21 +35,53 @@ function onSubmit() {
   createChat(input.value)
 }
 
-const quickChats = computed(() => {
-  const cfg = (runtimeConfig.public as any).quickChats as Array<any> | undefined
+const quickChats = computed<QuickChatOption[]>(() => {
+  const publicConfig = runtimeConfig.public as Record<string, unknown>
+  const configured = publicConfig.quickChats
 
-  if (Array.isArray(cfg) && cfg.length) {
-    return cfg.map(item => {
-      // 支持 label 为 { zh,en } 或直接提供 zh/en 字段，也兼容直接给字符串
-      const localized = typeof item.label === 'object'
-        ? (item.label[locale.value] ?? item.label.zh ?? item.label.en)
-        : (item?.[locale.value] ?? item?.zh ?? item?.en ?? item.label)
+  if (Array.isArray(configured)) {
+    const entries = configured.filter((item): item is QuickChatEntry => typeof item === 'object' && item !== null)
 
-      return {
-        label: localized,
-        icon: item.icon
-      }
-    })
+    const mapped = entries
+      .map((entry) => {
+        let localized: string | undefined
+
+        if (typeof entry.label === 'string') {
+          localized = entry.label
+        } else if (entry.label && typeof entry.label === 'object') {
+          const labelMap = entry.label as QuickChatLabelMap
+          localized = labelMap[locale.value] ?? labelMap.zh ?? labelMap.en
+        }
+
+        if (!localized) {
+          const byLocale = entry[locale.value]
+          if (typeof byLocale === 'string') {
+            localized = byLocale
+          }
+        }
+
+        if (!localized && typeof entry.zh === 'string') {
+          localized = entry.zh
+        }
+
+        if (!localized && typeof entry.en === 'string') {
+          localized = entry.en
+        }
+
+        if (!localized) {
+          return undefined
+        }
+
+        return {
+          label: localized,
+          icon: typeof entry.icon === 'string' ? entry.icon : undefined
+        }
+      })
+      .filter((item): item is QuickChatOption => Boolean(item))
+
+    if (mapped.length) {
+      return mapped
+    }
   }
 
   // 回退到原有的 i18n 方案

@@ -1,12 +1,30 @@
 version: '3.8'
 
 services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chat-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      # 数据库连接（Drizzle / Postgres）
+      DATABASE_URL: postgres://postgres:postgres123@postgres:5432/chat_db
+      # Session 密钥（至少 32 字符）
+      NUXT_SESSION_PASSWORD: please-change-me-32-chars-minimum-xxxxxxxxxxxxxxxx
+      # 可选：设置默认模型等
+      # DEFAULT_MODEL: deepseek/deepseek-chat
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app
+
   postgres:
-    # 使用官方镜像（配置镜像加速器后可加速拉取）
-    image: postgres:18
-    # 或者直接使用国内镜像源（取消下面的注释并注释掉上面一行）：
-    # image: registry.cn-hangzhou.aliyuncs.com/acs/postgres:18
-    # image: ccr.ccs.tencentyun.com/library/postgres:18
+    image: postgres:16
     container_name: chat-postgres
     restart: unless-stopped
     environment:
@@ -16,13 +34,32 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app
+
+  nginx:
+    image: nginx:alpine
+    container_name: chat-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    networks:
+      - app
 
 volumes:
   postgres_data:
+
+networks:
+  app:
+    driver: bridge
 
